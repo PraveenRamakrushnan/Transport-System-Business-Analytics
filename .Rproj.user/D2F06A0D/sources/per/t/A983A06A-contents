@@ -1,0 +1,68 @@
+set.seed(123)  
+n <- 200  
+
+vehicle_types <- c("Sedan", "SUV", "Hatchback", "Truck", "Coupe", "Convertible")
+brands <- c("Toyota", "Ford", "BMW", "Honda", "Chevrolet", "Mercedes", "Hyundai", "Kia")
+
+auto_info <- data.frame(
+  engine_size = round(runif(n, 1.0, 4.5), 1),
+  horsepower = round(runif(n, 70, 300), 0),
+  curb_weight = round(runif(n, 2000, 5000), 0),
+  fuel_efficiency = round(runif(n, 10, 50), 1),
+  age = sample(0:14, n, replace = TRUE),
+  vehicle_type = sample(vehicle_types, n, replace = TRUE),
+  brand = sample(brands, n, replace = TRUE)
+)
+
+auto_info$price <- round(
+  5000 +
+    auto_info$engine_size * 5000 +
+    auto_info$horsepower * 50 -
+    auto_info$age * 1000 +
+    rnorm(n, 0, 3000), 2
+)
+
+auto_info$price <- pmax(pmin(auto_info$price, 100000), 5000)
+
+write.csv(auto_info, "auto_info.csv", row.names = FALSE)
+
+
+
+---------------------------------------------------------------------------
+
+  
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+
+auto_data <- read.csv("auto_info.csv")
+
+
+str(auto_data)
+head(auto_data)
+
+# Bell Curve: Engine Size
+ggplot(auto_data, aes(x = engine_size)) +
+  geom_histogram(aes(y = ..density..), bins = 20, fill = "lightblue", color = "black") +
+  geom_density(color = "red", size = 1.2) +
+  ggtitle("Bell Curve: Engine Size")
+
+# Bell Curve: Horsepower
+ggplot(auto_data, aes(x = horsepower)) +
+  geom_histogram(aes(y = ..density..), bins = 20, fill = "lightgreen", color = "black") +
+  geom_density(color = "blue", size = 1.2) +
+  ggtitle("Bell Curve: Horsepower")
+
+# Bell Curve: Curb Weight
+ggplot(auto_data, aes(x = curb_weight)) +
+  geom_histogram(aes(y = ..density..), bins = 20, fill = "orange", color = "black") +
+  geom_density(color = "darkgreen", size = 1.2) +
+  ggtitle("Bell Curve: Curb Weight")
+
+# Bell Curve: Price
+ggplot(auto_data, aes(x = price)) +
+  geom_histogram(aes(y = ..density..), bins = 20, fill = "purple", color = "black") +
+  geom_density(color = "yellow", size = 1.2) +
+  ggtitle("Bell Curve: Price")
+
